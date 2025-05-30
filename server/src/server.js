@@ -30,13 +30,13 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // cors setup
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL
-  })
-);
-console.log(process.env.FRONTEND_URL)
-// app.use(cors());
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL
+//   })
+// );
+// console.log(process.env.FRONTEND_URL)
+app.use(cors());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

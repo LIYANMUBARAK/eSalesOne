@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Order Confirmation</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+      h3 {
+        color: #34495e;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e1e4e8;
+        padding-bottom: 5px;
+      }
+      ul {
+        padding-left: 20px;
+        margin-bottom: 20px;
+      }
+      li {
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+      p {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .total {
+        font-size: 18px;
+        font-weight: bold;
+        color: #2d7a46;
+      }
+      .footer {
+        font-size: 12px;
+        color: #888;
+        text-align: center;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>🎉 Thank you for your order, {{customerName}}!</h2>
+      <p>Your order <strong>#{{orderNumber}}</strong> has been successfully confirmed.</p>
+
+      <h3>🛒 Order Details:</h3>
+      <ul>
+        {{#each items}}
+        <li>{{this.name}} &mdash; {{this.quantity}} × ₹{{this.price}}</li>
+        {{/each}}
+      </ul>
+
+      <p class="total">Total: ₹{{total}}</p>
+
+      <p>We will notify you via email once your items have shipped.</p>
+      <p>Best regards,<br /><strong>Tech Store Team</strong></p>
+
+      <div class="footer">&copy; 2025 Tech Store. All rights reserved.</div>
+    </div>
+  </body>
+</html>

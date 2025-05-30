@@ -27,20 +27,19 @@ const orderSchema = new Schema({
     card: String,
     expiryDate: String,
   },
-  subtotal:{
-    type:Number
+  subtotal: {
+    type: Number,
   },
-  total:{
-    type: Number
+  total: {
+    type: Number,
   },
-  shipping:{
-    type: String
-  }
-  ,
+  shipping: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-export const order =  mongoose.model('Order', orderSchema);
+export const order = mongoose.model('Order', orderSchema);

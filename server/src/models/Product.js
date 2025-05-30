@@ -1,47 +1,51 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const optionsSchema = new Schema({
-  model: String, price : Number, stock: Number
-})
+  model: String,
+  price: Number,
+  stock: Number,
+});
 
-const variantSchema = new Schema({
-  name: { type: String, required: true },
-  options:[optionsSchema]
-}, { _id: false });
+const variantSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    options: [optionsSchema],
+  },
+  { _id: false }
+);
 
 const productSchema = new Schema({
   name: {
     type: String,
     required: true,
     trim: true,
-    unique: true // prevents duplicate names
+    unique: true,
   },
   product_id: {
     type: String,
-    required: true
+    required: true,
   },
-  description:{
+  description: {
     type: String,
-    required:true,
-
+    required: true,
   },
   price: {
     type: Number,
     required: true,
-    min: 0 // disallow negative prices
+    min: 0,
   },
   variant: {
     type: [variantSchema],
-    default: []
+    default: [],
   },
   color: {
-    type: [String]
+    type: [String],
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-export const product = mongoose.model('Product', productSchema)
+export const product = mongoose.model('Product', productSchema);

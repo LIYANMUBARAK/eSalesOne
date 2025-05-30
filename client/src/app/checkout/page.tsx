@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import { CreditCard, ShoppingBag, MapPin, User, Mail, Phone, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation'; // Add this at the top
 
-
 export default function CheckoutPage() {
-      const router = useRouter()
+  const router = useRouter();
   const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -40,7 +39,7 @@ export default function CheckoutPage() {
     const newErrors: { [key: string]: string } = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\d{10}$/;
-    const cardRegex =/^\d{1}$/;
+    const cardRegex = /^\d{1}$/;
     const cvvRegex = /^\d{3}$/;
 
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
@@ -50,8 +49,7 @@ export default function CheckoutPage() {
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
     if (!formData.zip.trim()) newErrors.zip = 'Zip code is required';
-    if (!cardRegex.test(formData.cardNumber))
-      newErrors.cardNumber = 'Card number must be 1 digit';
+    if (!cardRegex.test(formData.cardNumber)) newErrors.cardNumber = 'Card number must be 1 digit';
 
     // Expiry must be future
     const now = new Date();
@@ -76,68 +74,62 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (validate()) {
-    setIsProcessing(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) {
+      setIsProcessing(true);
 
-    try {
-      const orderPayload = {
-        customer: {
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-        },
-        payment: {
-          cardNumber: formData.cardNumber,
-          expiryDate: formData.expiryDate,
-          cvv: formData.cvv,
-        },
-        items: checkoutItems,
-        subtotal,
-        shipping,
-        total,
-      };
+      try {
+        const orderPayload = {
+          customer: {
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+          },
+          payment: {
+            cardNumber: formData.cardNumber,
+            expiryDate: formData.expiryDate,
+            cvv: formData.cvv,
+          },
+          items: checkoutItems,
+          subtotal,
+          shipping,
+          total,
+        };
 
-      const response:any = await fetch('http://localhost:8000/order/createOrder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderPayload),
-      });
-      const responseData = await response.json()
-      console.log(responseData)
-      if (response.status === 200) {
-           console.log("response order : ", responseData.order)
-        
-        setTimeout(()=>{
-         setIsProcessing(false)
-       localStorage.removeItem('checkoutItems');
-       router.push(`/thankYou?orderNumber=${responseData.order.orderNumber}`)
-
-        },2000)
-        
-      } else if (response.status === 402) {
-        setErrors({ form: 'Payment failed. Please check your card details.' });
-      } else if (response.status === 500) {
-        setErrors({ form: 'Payment Gateway error.' });
-      } else {
-        setErrors({ form: `Unexpected error: ${response.status}` });
+        const response: any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/createOrder`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',           
+          },
+          body: JSON.stringify(orderPayload),
+        });
+        const responseData = await response.json();
+        if (response.status === 200) {
+          setTimeout(() => {
+            setIsProcessing(false);
+            localStorage.removeItem('checkoutItems');
+            router.push(`/thankYou?orderNumber=${responseData.order.orderNumber}`);
+          }, 2000);
+        } else if (response.status === 402) {
+          setErrors({ form: 'Payment failed. Please check your card details.' });
+        } else if (response.status === 500) {
+          setErrors({ form: 'Payment Gateway error.' });
+        } else {
+          setErrors({ form: `Unexpected error: ${response.status}` });
+        }
+        setIsProcessing(false);
+      } catch (error) {
+        console.error('Order submission error:', error);
+        setErrors({ form: 'Network or server error occurred.' });
+        setIsProcessing(false);
       }
-      setIsProcessing(false)
-    } catch (error) {
-      console.error('Order submission error:', error);
-      setErrors({ form: 'Network or server error occurred.' });
-            setIsProcessing(false)
-
     }
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-800 ">
@@ -188,10 +180,10 @@ const handleSubmit = async (e: React.FormEvent) => {
                   <span>₹{total.toFixed(2)}</span>
                 </div>
                 {errors.form && (
-  <div className="bg-red-100 text-red-700 p-3 rounded-xl text-center mb-4">
-    {errors.form}
-  </div>
-)}
+                  <div className="bg-red-100 text-red-700 p-3 rounded-xl text-center mb-4">
+                    {errors.form}
+                  </div>
+                )}
 
                 {/* Submit Button */}
                 <button

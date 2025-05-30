@@ -16,7 +16,7 @@ const getAllProducts = async (request, response, next) => {
 
 const getProductById = async (request, response, next) => {
   const { id } = request.params;
-  console.log(id)
+  console.log(id);
   try {
     const productDetails = await product.findOne({ product_id: id });
     response.status(200).json({

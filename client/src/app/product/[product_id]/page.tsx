@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Minus, Plus, ArrowLeft } from 'lucide-react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 interface VariantOption {
   name: string;
@@ -29,8 +31,6 @@ interface Product {
   color: string[];
   createdAt?: Date;
 }
-
-const API_BASE_URL = 'http://localhost:8000';
 
 function getProductImage(productName: string): string {
   const imageMap: { [key: string]: string } = {
@@ -65,15 +65,18 @@ export default function ProductPage() {
 
     async function fetchProduct() {
       try {
-        const response = await fetch(`${API_BASE_URL}/product/getProductById/${productId}`, {
-          method: 'GET',
-          cache: 'no-store',
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/product/getProductById/${productId}`,
+          {
+            method: 'GET',
+            cache: 'no-store',
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          }
+        );
 
         if (response.ok) {
           const result = await response.json();
@@ -169,7 +172,7 @@ export default function ProductPage() {
     const cartItem = {
       product_id: product.product_id,
       name: product.name,
-      price: totalPrice / quantity, // unit price
+      price: totalPrice / quantity,
       quantity,
       selectedVariants,
       selectedColor,
@@ -246,20 +249,7 @@ export default function ProductPage() {
               </Link>
               <h1 className="text-2xl font-bold text-gray-900">TechStore</h1>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors">
-                Home
-              </Link>
-              <Link href="/product" className="text-gray-900 hover:text-blue-600 transition-colors">
-                Products
-              </Link>
-              <Link href="/about" className="text-gray-500 hover:text-blue-600 transition-colors">
-                About
-              </Link>
-              <Link href="/contact" className="text-gray-500 hover:text-blue-600 transition-colors">
-                Contact
-              </Link>
-            </nav>
+            <Navbar />
           </div>
         </div>
       </header>
@@ -443,6 +433,8 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

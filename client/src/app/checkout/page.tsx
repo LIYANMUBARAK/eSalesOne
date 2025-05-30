@@ -103,21 +103,23 @@ const handleSubmit = async (e: React.FormEvent) => {
         total,
       };
 
-      const response = await fetch('http://localhost:8000/order/createOrder', {
+      const response:any = await fetch('http://localhost:8000/order/createOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderPayload),
       });
-
+      const responseData = await response.json()
+      console.log(responseData)
       if (response.status === 200) {
-           
+           console.log("response order : ", responseData.order)
         
         setTimeout(()=>{
          setIsProcessing(false)
        localStorage.removeItem('checkoutItems');
-        router.push('/thankYou');
+       router.push(`/thankYou?orderNumber=${responseData.order.orderNumber}`)
+
         },2000)
         
       } else if (response.status === 402) {
@@ -127,10 +129,13 @@ const handleSubmit = async (e: React.FormEvent) => {
       } else {
         setErrors({ form: `Unexpected error: ${response.status}` });
       }
+      setIsProcessing(false)
     } catch (error) {
       console.error('Order submission error:', error);
       setErrors({ form: 'Network or server error occurred.' });
-    } 
+            setIsProcessing(false)
+
+    }
   }
 };
 

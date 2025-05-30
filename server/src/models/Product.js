@@ -17,10 +17,6 @@ const productSchema = new Schema({
     trim: true,
     unique: true // prevents duplicate names
   },
-  stock: {
-  type: Number,
-  required: true,
-},
   product_id: {
     type: String,
     required: true

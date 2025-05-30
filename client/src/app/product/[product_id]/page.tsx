@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, Heart, Star, Minus, Plus, ArrowLeft } from 'lucide-react';
+import { Star, Minus, Plus, ArrowLeft } from 'lucide-react';
 
 interface VariantOption {
   name: string;
@@ -78,7 +78,7 @@ export default function ProductPage() {
         if (response.ok) {
           const result = await response.json();
           setProduct(result.data);
-          
+
           // Pre-select first options
           const firstVariants: { [key: string]: string } = {};
           result.data.variant.forEach((variant: ProductVariant) => {
@@ -87,12 +87,11 @@ export default function ProductPage() {
             }
           });
           setSelectedVariants(firstVariants);
-          
+
           // Pre-select first color
           if (result.data.color && result.data.color.length > 0) {
             setSelectedColor(result.data.color[0]);
           }
-          
         } else {
           setProduct(null);
         }
@@ -111,13 +110,13 @@ export default function ProductPage() {
   useEffect(() => {
     if (product) {
       let basePrice = product.price;
-      
+
       // Find selected variant option and use its price
       Object.entries(selectedVariants).forEach(([variantName, optionIdentifier]) => {
         const variant = product.variant.find((v) => v.name === variantName);
         if (variant) {
-          const option = variant.options.find((o) => 
-            (o.name && o.name === optionIdentifier) || o.model === optionIdentifier
+          const option = variant.options.find(
+            (o) => (o.name && o.name === optionIdentifier) || o.model === optionIdentifier
           );
           if (option && option.price) {
             basePrice = option.price;
@@ -142,15 +141,15 @@ export default function ProductPage() {
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
-    
+
     // Get stock from selected variant option
     let maxStock = 10; // default
     if (product) {
       Object.entries(selectedVariants).forEach(([variantName, optionIdentifier]) => {
         const variant = product.variant.find((v) => v.name === variantName);
         if (variant) {
-          const option = variant.options.find((o) => 
-            (o.name && o.name === optionIdentifier) || o.model === optionIdentifier
+          const option = variant.options.find(
+            (o) => (o.name && o.name === optionIdentifier) || o.model === optionIdentifier
           );
           if (option && option.stock) {
             maxStock = option.stock;
@@ -158,7 +157,7 @@ export default function ProductPage() {
         }
       });
     }
-    
+
     if (newQuantity >= 1 && newQuantity <= maxStock) {
       setQuantity(newQuantity);
     }
@@ -187,13 +186,13 @@ export default function ProductPage() {
 
   const getSelectedVariantStock = () => {
     if (!product) return 10;
-    
+
     let stock = 10;
     Object.entries(selectedVariants).forEach(([variantName, optionIdentifier]) => {
       const variant = product.variant.find((v) => v.name === variantName);
       if (variant) {
-        const option = variant.options.find((o) => 
-          (o.name && o.name === optionIdentifier) || o.model === optionIdentifier
+        const option = variant.options.find(
+          (o) => (o.name && o.name === optionIdentifier) || o.model === optionIdentifier
         );
         if (option && option.stock) {
           stock = option.stock;
@@ -280,7 +279,7 @@ export default function ProductPage() {
             </div>
 
             {/* Thumbnail images */}
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={`thumbnail-${i}`}
@@ -295,7 +294,7 @@ export default function ProductPage() {
                   />
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Product Info */}
@@ -312,12 +311,12 @@ export default function ProductPage() {
 
             {/* Price */}
             <p className="text-3xl font-bold text-blue-600">
-              ₹{(totalPrice ).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              ₹{totalPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </p>
 
             {/* Description */}
             <p className="text-gray-700">{product.description}</p>
-            
+
             {/* Colors */}
             {product.color && product.color.length > 0 && (
               <div className="mb-6">
@@ -340,7 +339,7 @@ export default function ProductPage() {
                 </div>
               </div>
             )}
-            
+
             {/* Variants (Storage, etc.) */}
             {product.variant && product.variant.length > 0 && (
               <div className="space-y-4">
@@ -352,7 +351,7 @@ export default function ProductPage() {
                         const optionId = option.name || option.model;
                         const isSelected = selectedVariants[variant.name] === optionId;
                         const optionKey = `${variant.name}-${optionId || `option-${optionIndex}`}`;
-                        
+
                         return (
                           <button
                             key={optionKey}
@@ -364,12 +363,18 @@ export default function ProductPage() {
                                 : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
                             }`}
                           >
-                            <div className="font-medium">{optionId}</div>
-                            <div className="text-sm opacity-75">
-                              ₹{(option.price ).toLocaleString('en-IN')}
+                            <div className="flex justify-between">
+                              <div className="font-medium">{optionId}</div>
+                              <div className="text-sm opacity-75">
+                                ₹{option.price.toLocaleString('en-IN')}
+                              </div>
                             </div>
+
                             <div className="text-xs opacity-60">
-                              Stock: {option.stock}
+                              Items left: {option.stock}{' '}
+                              {option.stock < 10 && (
+                                <span className="text-red-500"> - Only a few items left!</span>
+                              )}
                             </div>
                           </button>
                         );
@@ -392,7 +397,9 @@ export default function ProductPage() {
                 >
                   <Minus className="h-5 w-5" />
                 </button>
-                <span className="text-xl font-semibold w-12  text-gray-500 text-center">{quantity}</span>
+                <span className="text-xl font-semibold w-12  text-gray-500 text-center">
+                  {quantity}
+                </span>
                 <button
                   type="button"
                   onClick={() => handleQuantityChange(1)}
@@ -402,9 +409,7 @@ export default function ProductPage() {
                   <Plus className="h-5 w-5" />
                 </button>
               </div>
-              <span className="text-sm text-gray-500">
-                (Max: {getSelectedVariantStock()})
-              </span>
+              <span className="text-sm text-gray-500">(Max: {getSelectedVariantStock()})</span>
             </div>
 
             {/* Action Buttons */}
@@ -413,25 +418,26 @@ export default function ProductPage() {
                 onClick={handleBuyNow}
                 className="flex-1 flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
-                Buy Now - ₹{(totalPrice ).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                Buy Now - ₹{totalPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </button>
-
             </div>
 
             {/* Product Info Summary */}
             <div className="bg-gray-50 p-4 rounded-lg mt-6">
               <h4 className="font-semibold text-gray-800 mb-2">Selected Configuration:</h4>
               <div className="space-y-1 text-sm text-gray-600">
-                <p><span className="font-medium">Color:</span> {selectedColor}</p>
+                <p>
+                  <span className="font-medium">Color:</span> {selectedColor}
+                </p>
                 {Object.entries(selectedVariants).map(([variantName, optionId]) => (
                   <p key={variantName}>
                     <span className="font-medium">{variantName}:</span> {optionId}
                   </p>
                 ))}
-                <p><span className="font-medium">Quantity:</span> {quantity}</p>
-                <p className="font-semibold text-blue-600 pt-1">
-                  Total: ₹{(totalPrice)}
+                <p>
+                  <span className="font-medium">Quantity:</span> {quantity}
                 </p>
+                <p className="font-semibold text-blue-600 pt-1">Total: ₹{totalPrice}</p>
               </div>
             </div>
           </div>
